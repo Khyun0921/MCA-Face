@@ -79,6 +79,26 @@
         elem.msRequestFullscreen();
     }
 }
+document.addEventListener("DOMContentLoaded", function() {
+    const videoElement = document.querySelector('video');
+    
+    // 비디오 컨트롤을 숨기기 위한 시도
+    videoElement.removeAttribute('controls');
+
+    // 전체 화면 상태에서도 컨트롤이 나타나지 않도록 설정
+    videoElement.addEventListener('play', function() {
+        videoElement.controls = false; // 플레이 중 컨트롤 제거
+    });
+
+    videoElement.addEventListener('click', function() {
+        videoElement.requestFullscreen(); // 비디오 클릭 시 전체 화면 전환
+    });
+
+    // 전체 화면을 위한 추가 설정
+    videoElement.addEventListener('fullscreenchange', function() {
+        videoElement.controls = false; // 전체 화면에서도 컨트롤 제거
+    });
+});
 </script>
 <body>
     <div class="Main">
@@ -127,6 +147,7 @@
         width: 2560px;
         height: 1600px;
         object-fit: cover;
+        pointer-events: none; /* 사용자가 클릭해도 아무 반응이 없도록 함 */
     }
     .Button{
         width: 900px;
