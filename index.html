@@ -5,185 +5,70 @@
     <meta name="viewport" content="width=2560, height=1600, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.rawgit.com/RobotWebTools/roslibjs/master/build/roslib.min.js"></script> <!-- ROSLIB.js 추가 -->
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /* 스크롤 방지 */
+        }
+
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* 배경처럼 보이게 하기 위해 */
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none; /* 사용자가 클릭할 수 없도록 함 */
+        }
+
+        .content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #000;
+        }
+    </style>
 </head>
-<script>
-        const ros = new ROSLIB.Ros({
-            url: 'ws://192.168.50.204:9090' // ROSBridge 웹소켓 URL
-        });
-        // ROS 연결 성공 시
-        ros.on('connection', function() {
-            console.log('ROS 연결 성공');
-            // 'robot/arrive' 주제를 구독
-            const listener = new ROSLIB.Topic({
-                ros: ros,
-                name: '/robot/arrive',
-                messageType: 'std_msgs/String'
-            });
-
-            listener.subscribe(function(message) {
-                handleROSMessage(message.data);
-            });
-        });
-
-        // ROS 연결 오류 처리
-        ros.on('error', function(error) {
-            console.error('ROS 연결 오류: ', error);
-        });
-        // 메시지 수신 처리
-        function handleROSMessage(receivedMessage) {
-            if (receivedMessage === 'Arrive') {
-                const faceElement = document.getElementById('Face');
-                const okayButtonElement = document.getElementById('button');
-                // 얼굴 요소를 서서히 사라지게 함
-                faceElement.style.opacity = '0';
-                // 일정 시간 후에 얼굴을 숨기고 버튼을 나타나게 함
-                setTimeout(() => {
-                    faceElement.style.display = 'none'; // 얼굴을 완전히 숨김
-                    okayButtonElement.style.display = 'block'; // 버튼을 표시
-                    okayButtonElement.style.opacity = '1'; // 버튼을 서서히 나타나게 함
-                }, 1000); // 1초 후에 전환
+<body>
+    <div class="video-container">
+        <video autoplay muted loop playsinline>
+            <source src="eye.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="content">
+        <h1 onclick="requestFullscreen()">MCAfe</h1>
+        <button onclick="OkayToRos()">PUSH</button>
+    </div>
+    <script>
+        function requestFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) { // Firefox
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, Opera
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { // IE/Edge
+                elem.msRequestFullscreen();
             }
         }
+
         function OkayToRos() {
-            const topic = new ROSLIB.Topic({
-                ros: ros,
-                name: '/robot/initial',
-                messageType: 'std_msgs/String'
-            });
-            const message = new ROSLIB.Message({
-                data: 'Okay'
-            });
-            topic.publish(message);
-            console.log('메시지 전송 성공: Okay');
-            const faceElement = document.getElementById('Face');
-            const okayButtonElement = document.getElementById('button');
-            // 버튼을 서서히 사라지게 함
-            okayButtonElement.style.opacity = '0';
-            // 일정 시간 후에 버튼을 숨기고 얼굴을 나타나게 함
-            setTimeout(() => {
-                okayButtonElement.style.display = 'none'; // 버튼을 완전히 숨김
-                faceElement.style.display = 'block'; // 얼굴을 표시
-                faceElement.style.opacity = '1'; // 얼굴을 서서히 나타나게 함
-            }, 1000); // 1초 후에 전환
+            console.log('Okay message sent to ROS');
+            // 여기에 ROS 메시지 전송 로직 추가
         }
-    // MCAfe 클릭 시 전체화면 전환 함수
-    function requestFullscreen() {
-    const elem = document.documentElement; // 전체 페이지를 대상으로 함
-    if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-    } else if (elem.mozRequestFullScreen) { // Firefox
-        elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, Opera
-        elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { // IE/Edge
-        elem.msRequestFullscreen();
-    }
-}
-document.addEventListener("DOMContentLoaded", function() {
-    const videoElement = document.querySelector('video');
-    
-    // 비디오 컨트롤을 숨기기 위한 시도
-    videoElement.removeAttribute('controls');
-
-    // 전체 화면 상태에서도 컨트롤이 나타나지 않도록 설정
-    videoElement.addEventListener('play', function() {
-        videoElement.controls = false; // 플레이 중 컨트롤 제거
-    });
-
-    videoElement.addEventListener('click', function() {
-        videoElement.requestFullscreen(); // 비디오 클릭 시 전체 화면 전환
-    });
-
-    // 전체 화면을 위한 추가 설정
-    videoElement.addEventListener('fullscreenchange', function() {
-        videoElement.controls = false; // 전체 화면에서도 컨트롤 제거
-    });
-});
-</script>
-<body>
-    <div class="Main">
-        <div class="display" id="Face" style="display: block;">
-            <h1 class="MCAfe1" onclick="requestFullscreen()">MCAfe</h1>
-            <video src="EYE/eye.mp4" muted playsinline loop autoplay class="video" type="video/mp4"></video>
-        </div>
-        <div class="display" style="display: none;" id="button">
-            <h1 class="MCAfe" onclick="requestFullscreen()">MCAfe</h1>
-            <h1 class="Normal">음식을 받으시면 버튼을 눌러주세요</h1>
-            <button class="Button" onclick="OkayToRos()">
-                <h1 class="ButtonFont">PUSH</h1>
-            </button>
-        </div>
-    </div>
+    </script>
 </body>
-<style>
-    @font-face {
-        font-family: 'SquarePeg';
-        src: url('SquarePeg-Regular.ttf') format('opentype'); 
-    }
-    @font-face {
-        font-family: 'SemiBold';
-        src: url('Pretendard-Bold.otf') format('opentype'); 
-    }
-    .main{
-        width: 2560px;
-        height: 1600px;
-        display: flex;
-        text-align: center;
-        align-items: center;
-        justify-items: center;
-        overflow: hidden;
-    }
-    .display{
-        width: 2560px;
-        height: 1600px;
-        display: flex;
-        text-align: center;
-        align-items: center;
-        justify-items: center;
-        overflow: hidden;
-        background-color: #FFF5E1;
-    } 
-    .video{
-        width: 2560px;
-        height: 1600px;
-        object-fit: cover;
-        pointer-events: none; /* 사용자가 클릭해도 아무 반응이 없도록 함 */
-    }
-    .Button{
-        width: 900px;
-        height: 900px;
-        border-radius: 100%;
-        position: fixed;
-        margin-left: 780px;
-        margin-top: 400px;
-        border: none;
-        box-shadow: 3px 5px 5px gray;
-        background-color: #ECE4D3;
-    }
-    .ButtonFont{
-        font-size: 240px;
-        font-family: "SemiBold", sans-serif;
-        text-align: center;
-    }
-    .MCAfe{
-        font-size: 150px;
-        font-family: "SquarePeg", sans-serif;
-        position: fixed;
-        margin-bottom: 1400px;
-        margin-left: 100px;        
-    }
-    .MCAfe1{
-        font-size: 150px;
-        font-family: "SquarePeg", sans-serif;
-        position: fixed; 
-        z-index: 1200;     
-    }
-    .Normal{
-        font-family: "SemiBold", sans-serif;
-        font-size: 100px;
-        margin-bottom: 900px;
-        text-align: center;
-        margin-left: 600px;
-    }
-</style>
 </html>
