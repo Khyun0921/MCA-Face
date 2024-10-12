@@ -7,83 +7,93 @@
     <script src="https://cdn.rawgit.com/RobotWebTools/roslibjs/master/build/roslib.min.js"></script> <!-- ROSLIB.js 추가 -->
 </head>
 <script>
-        const ros = new ROSLIB.Ros({
-            url: 'ws://192.168.50.204:9090' // ROSBridge 웹소켓 URL
-        });
-        // ROS 연결 성공 시
-        ros.on('connection', function() {
-            console.log('ROS 연결 성공');
-            // 'robot/arrive' 주제를 구독
-            const listener = new ROSLIB.Topic({
-                ros: ros,
-                name: '/robot/arrive',
-                messageType: 'std_msgs/String'
-            });
-
-            listener.subscribe(function(message) {
-                handleROSMessage(message.data);
-            });
+    // 기존 스크립트 코드 유지
+    const ros = new ROSLIB.Ros({
+        url: 'ws://192.168.50.204:9090' // ROSBridge 웹소켓 URL
+    });
+    ros.on('connection', function() {
+        console.log('ROS 연결 성공');
+        const listener = new ROSLIB.Topic({
+            ros: ros,
+            name: '/robot/arrive',
+            messageType: 'std_msgs/String'
         });
 
-        // ROS 연결 오류 처리
-        ros.on('error', function(error) {
-            console.error('ROS 연결 오류: ', error);
+        listener.subscribe(function(message) {
+            handleROSMessage(message.data);
         });
-        // 메시지 수신 처리
-        function handleROSMessage(receivedMessage) {
-            if (receivedMessage === 'Arrive') {
-                const faceElement = document.getElementById('Face');
-                const okayButtonElement = document.getElementById('button');
-                // 얼굴 요소를 서서히 사라지게 함
-                faceElement.style.opacity = '0';
-                // 일정 시간 후에 얼굴을 숨기고 버튼을 나타나게 함
-                setTimeout(() => {
-                    faceElement.style.display = 'none'; // 얼굴을 완전히 숨김
-                    okayButtonElement.style.display = 'block'; // 버튼을 표시
-                    okayButtonElement.style.opacity = '1'; // 버튼을 서서히 나타나게 함
-                }, 1000); // 1초 후에 전환
-            }
-        }
-        function OkayToRos() {
-            const topic = new ROSLIB.Topic({
-                ros: ros,
-                name: '/robot/initial',
-                messageType: 'std_msgs/String'
-            });
-            const message = new ROSLIB.Message({
-                data: 'Okay'
-            });
-            topic.publish(message);
-            console.log('메시지 전송 성공: Okay');
+    });
+
+    ros.on('error', function(error) {
+        console.error('ROS 연결 오류: ', error);
+    });
+
+    function handleROSMessage(receivedMessage) {
+        if (receivedMessage === 'Arrive') {
             const faceElement = document.getElementById('Face');
             const okayButtonElement = document.getElementById('button');
-            // 버튼을 서서히 사라지게 함
-            okayButtonElement.style.opacity = '0';
-            // 일정 시간 후에 버튼을 숨기고 얼굴을 나타나게 함
+            faceElement.style.opacity = '0';
             setTimeout(() => {
-                okayButtonElement.style.display = 'none'; // 버튼을 완전히 숨김
-                faceElement.style.display = 'block'; // 얼굴을 표시
-                faceElement.style.opacity = '1'; // 얼굴을 서서히 나타나게 함
-            }, 1000); // 1초 후에 전환
+                faceElement.style.display = 'none';
+                okayButtonElement.style.display = 'block';
+                okayButtonElement.style.opacity = '1';
+            }, 1000);
         }
-    // MCAfe 클릭 시 전체화면 전환 함수
-    function requestFullscreen() {
-    const elem = document.documentElement; // 전체 페이지를 대상으로 함
-    if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-    } else if (elem.mozRequestFullScreen) { // Firefox
-        elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, Opera
-        elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { // IE/Edge
-        elem.msRequestFullscreen();
     }
-}
+
+    function OkayToRos() {
+        const topic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/robot/initial',
+            messageType: 'std_msgs/String'
+        });
+        const message = new ROSLIB.Message({
+            data: 'Okay'
+        });
+        topic.publish(message);
+        console.log('메시지 전송 성공: Okay');
+        const faceElement = document.getElementById('Face');
+        const okayButtonElement = document.getElementById('button');
+        okayButtonElement.style.opacity = '0';
+        setTimeout(() => {
+            okayButtonElement.style.display = 'none';
+            faceElement.style.display = 'block';
+            faceElement.style.opacity = '1';
+        }, 1000);
+    }
+
+    // MCAfe 클릭 시 전체 화면 전환 함수
+    function requestFullscreen() {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.mozRequestFullScreen) { // Firefox
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, Opera
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { // IE/Edge
+            elem.msRequestFullscreen();
+        }
+    }
+
+    // 비디오 클릭 시 전체 화면 전환 함수
+    function videoFullscreen() {
+        const video = document.querySelector('video');
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        } else if (video.mozRequestFullScreen) { // Firefox
+            video.mozRequestFullScreen();
+        } else if (video.webkitRequestFullscreen) { // Chrome, Safari, Opera
+            video.webkitRequestFullscreen();
+        } else if (video.msRequestFullscreen) { // IE/Edge
+            video.msRequestFullscreen();
+        }
+    }
 </script>
 <body>
     <div class="Main">
         <div class="display" id="Face" style="display: block;">
-            <video src="eye.mp4" muted playsinline loop autoplay class="video" type="video/mp4"></video>
+            <video src="eye.mp4" muted playsinline loop autoplay onclick="videoFullscreen()" class="video" type="video/mp4"></video>
         </div>
         <div class="display" style="display: none;" id="button">
             <h1 class="MCAfe" onclick="requestFullscreen()">MCAfe</h1>
