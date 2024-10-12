@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=2560, height=1600, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.rawgit.com/RobotWebTools/roslibjs/master/build/roslib.min.js"></script> <!-- ROSLIB.js 추가 -->
+</head>
+<script>
+        const ros = new ROSLIB.Ros({
+            url: 'ws://192.168.50.204:9090' // ROSBridge 웹소켓 URL
+        });
+        // ROS 연결 성공 시
+        ros.on('connection', function() {
+            console.log('ROS 연결 성공');
+            // 'robot/arrive' 주제를 구독
+            const listener = new ROSLIB.Topic({
+                ros: ros,
+                name: '/robot/arrive',
+                messageType: 'std_msgs/String'
+            });
+
+            listener.subscribe(function(message) {
+                handleROSMessage(message.data);
+            });
+        });
+
+        // ROS 연결 오류 처리
+        ros.on('error', function(error) {
+            console.error('ROS 연결 오류: ', error);
+        });
+        // 메시지 수신 처리
+        function handleROSMessage(receivedMessage) {
+            if (receivedMessage === 'Arrive') {
+                const faceElement = document.getElementById('Face');
+                const okayButtonElement = document.getElementById('button');
+                // 얼굴 요소를 서서히 사라지게 함
+                faceElement.style.opacity = '0';
+                // 일정 시간 후에 얼굴을 숨기고 버튼을 나타나게 함
+                setTimeout(() => {
+                    faceElement.style.display = 'none'; // 얼굴을 완전히 숨김
+                    okayButtonElement.style.display = 'block'; // 버튼을 표시
+                    okayButtonElement.style.opacity = '1'; // 버튼을 서서히 나타나게 함
+                }, 1000); // 1초 후에 전환
+            }
+        }
+        function OkayToRos() {
+            const topic = new ROSLIB.Topic({
+                ros: ros,
+                name: '/robot/initial',
+                messageType: 'std_msgs/String'
+            });
+            const message = new ROSLIB.Message({
+                data: 'Okay'
+            });
+            topic.publish(message);
+            console.log('메시지 전송 성공: Okay');
+            const faceElement = document.getElementById('Face');
+            const okayButtonElement = document.getElementById('button');
+            // 버튼을 서서히 사라지게 함
+            okayButtonElement.style.opacity = '0';
+            // 일정 시간 후에 버튼을 숨기고 얼굴을 나타나게 함
+            setTimeout(() => {
+                okayButtonElement.style.display = 'none'; // 버튼을 완전히 숨김
+                faceElement.style.display = 'block'; // 얼굴을 표시
+                faceElement.style.opacity = '1'; // 얼굴을 서서히 나타나게 함
+            }, 1000); // 1초 후에 전환
+        }
+    // MCAfe 클릭 시 전체화면 전환 함수
+    function requestFullscreen() {
+    const elem = document.documentElement; // 전체 페이지를 대상으로 함
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if (elem.mozRequestFullScreen) { // Firefox
+        elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, Opera
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { // IE/Edge
+        elem.msRequestFullscreen();
+    }
+}
+</script>
+<body>
+    <div class="Main">
+        <div class="display" id="Face" style="display: block;">
+            <video src="EYE/eye.mp4" muted playsinline loop autoplay class="video" type="video/mp4"></video>
+        </div>
+        <div class="display" style="display: none;" id="button">
+            <h1 class="MCAfe" onclick="requestFullscreen()">MCAfe</h1>
+            <h1 class="Normal">음식을 받으시면 버튼을 눌러주세요</h1>
+            <button class="Button" onclick="OkayToRos()">
+                <h1 class="ButtonFont">PUSH</h1>
+            </button>
+        </div>
+    </div>
+</body>
+<style>
+    @font-face {
+        font-family: 'SquarePeg';
+        src: url('SquarePeg-Regular.ttf') format('opentype'); 
+    }
+    @font-face {
+        font-family: 'SemiBold';
+        src: url('Pretendard-Bold.otf') format('opentype'); 
+    }
+    .main{
+        width: 2560px;
+        height: 1600px;
+        display: flex;
+        text-align: center;
+        align-items: center;
+        justify-items: center;
+        overflow: hidden;
+    }
+    .display{
+        width: 2560px;
+        height: 1600px;
+        display: flex;
+        text-align: center;
+        align-items: center;
+        justify-items: center;
+        overflow: hidden;
+        background-color: #FFF5E1;
+    } 
+    .video{
+        width: 2560px;
+        height: 1600px;
+        object-fit: cover;
+    }
+    .Button{
+        width: 900px;
+        height: 900px;
+        border-radius: 100%;
+        position: fixed;
+        margin-left: 780px;
+        margin-top: 400px;
+        border: none;
+        box-shadow: 3px 5px 5px gray;
+        background-color: #ECE4D3;
+    }
+    .ButtonFont{
+        font-size: 240px;
+        font-family: "SemiBold", sans-serif;
+        text-align: center;
+    }
+    .MCAfe{
+        font-size: 150px;
+        font-family: "SquarePeg", sans-serif;
+        position: fixed;
+        margin-bottom: 1400px;
+        margin-left: 100px;        
+    }
+    .Normal{
+        font-family: "SemiBold", sans-serif;
+        font-size: 100px;
+        margin-bottom: 900px;
+        text-align: center;
+        margin-left: 600px;
+    }
+</style>
+</html>
