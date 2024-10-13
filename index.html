@@ -133,11 +133,11 @@
             overflow: hidden;
             background-color: #FFF5E1;
         } 
-        .video{
+        .video {
             width: 100%;  /* 화면 가득 채우기 */
-            height: 100%; /* 화면 가득 채우기 */
-            object-fit: contain;
-            
+            height: auto; /* 비율 유지 */
+            max-height: 100%; /* 최대 높이를 화면 높이로 제한 */
+            object-fit: contain; /* 비디오 비율 유지하면서 가득 채우기, 빈 공간 발생 가능 */
         }
         .Button{
             width: 900px;
