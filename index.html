@@ -5,6 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.rawgit.com/RobotWebTools/roslibjs/master/build/roslib.min.js"></script>
+    <style>
+        @font-face {
+            font-family: 'SquarePeg';
+            src: url('SquarePeg-Regular.ttf') format('opentype'); 
+        }
+        @font-face {
+            font-family: 'SemiBold';
+            src: url('Pretendard-Bold.otf') format('opentype'); 
+        }
+        .Main {
+            width: 100vw;  /* 화면 가득 채우기 */
+            height: 100vh; /* 화면 가득 채우기 */
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Flexbox를 사용하여 중앙 정렬 */
+            overflow: hidden;
+        }
+        .display {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center; /* Flexbox를 사용하여 중앙 정렬 */
+            align-items: center; /* Flexbox를 사용하여 중앙 정렬 */
+            background-color: #FFF5E1;
+        }
+        .video {
+            width: 100%; /* 화면 가득 채우기 */
+            height: auto; /* 비율 유지 */
+            max-height: 100%; /* 최대 높이를 화면 높이로 제한 */
+            object-fit: cover; /* 비율 유지하며 화면을 완전히 덮음 */
+        }
+        .Button {
+            width: 900px;
+            height: 900px;
+            border-radius: 100%;
+            position: fixed;
+            margin-left: 780px;
+            margin-top: 400px;
+            border: none;
+            box-shadow: 3px 5px 5px gray;
+            background-color: #ECE4D3;
+        }
+        .ButtonFont {
+            font-size: 240px;
+            font-family: "SemiBold", sans-serif;
+            text-align: center;
+        }
+        .MCAfe {
+            font-size: 150px;
+            font-family: "SquarePeg", sans-serif;
+            position: fixed;
+            margin-bottom: 1400px;
+            margin-left: 100px;        
+        }
+        .Normal {
+            font-family: "SemiBold", sans-serif;
+            font-size: 100px;
+            margin-bottom: 900px;
+            text-align: center;
+            margin-left: 600px;
+        }
+    </style>
 </head>
 <body>
     <div class="Main">
@@ -105,70 +167,5 @@
             });
         });
     </script>
-    <style>
-        @font-face {
-            font-family: 'SquarePeg';
-            src: url('SquarePeg-Regular.ttf') format('opentype'); 
-        }
-        @font-face {
-            font-family: 'SemiBold';
-            src: url('Pretendard-Bold.otf') format('opentype'); 
-        }
-        .main{
-            width: 2560px;
-            height: 1600px;
-            display: flex;
-            text-align: center;
-            align-items: center;
-            justify-items: center;
-            overflow: hidden;
-        }
-        .display{
-            width: 2560px;
-            height: 1600px;
-            display: flex;
-            text-align: center;
-            align-items: center;
-            justify-items: center;
-            overflow: hidden;
-            background-color: #FFF5E1;
-        } 
-        .video {
-            width: 100%;  /* 화면 가득 채우기 */
-            height: auto; /* 비율 유지 */
-            max-height: 100%; /* 최대 높이를 화면 높이로 제한 */
-            object-fit: contain; /* 비디오 비율 유지하면서 가득 채우기, 빈 공간 발생 가능 */
-        }
-        .Button{
-            width: 900px;
-            height: 900px;
-            border-radius: 100%;
-            position: fixed;
-            margin-left: 780px;
-            margin-top: 400px;
-            border: none;
-            box-shadow: 3px 5px 5px gray;
-            background-color: #ECE4D3;
-        }
-        .ButtonFont{
-            font-size: 240px;
-            font-family: "SemiBold", sans-serif;
-            text-align: center;
-        }
-        .MCAfe{
-            font-size: 150px;
-            font-family: "SquarePeg", sans-serif;
-            position: fixed;
-            margin-bottom: 1400px;
-            margin-left: 100px;        
-        }
-        .Normal{
-            font-family: "SemiBold", sans-serif;
-            font-size: 100px;
-            margin-bottom: 900px;
-            text-align: center;
-            margin-left: 600px;
-        }
-    </style>
 </body>
 </html>
